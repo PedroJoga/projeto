@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <locale.h>
 
 //constantes do struct "tipoUser"
 #define N_UTENTE_S_MIN 100000000
@@ -77,6 +78,11 @@ tipoUser lerDadosMembro(tipoUser *, int, int *);
 int procurarMembro(tipoUser *, int, long);
 void mostrarMembros(tipoUser *, int);
 void mostrarMembros(tipoUser *, int);
+<<<<<<< Updated upstream:projeto/main.c
+=======
+void atRegVacMembro(tipoUser vetorMembros[], int numMembros);
+void atRegConfMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros);
+>>>>>>> Stashed changes:projeto/projeto/main.c
 
 //funcoes gerais
 tipoData lerData(char *);
@@ -92,6 +98,7 @@ void limpaBufferStdin(void);
 
 int main()
 {
+    setlocale(LC_ALL,"Portuguese");
     tipoUser vetorMembros[MAX_MEMBROS];
     tipoTeste vetorTestes[MAX_TESTES];
     int numMembros, numTestes, numTestesAgendados, numTestesRealizados, numVacinados;
@@ -116,10 +123,10 @@ int main()
                 mostrarMembros(vetorMembros, numMembros);
             break;
             case 'C':
-
+                atRegVacMembro(vetorMembros, numMembros);
             break;
             case 'D':
-
+                atRegConfMembro(vetorMembros, numMembros);
             break;
             case 'E':
 
@@ -176,7 +183,7 @@ int adicionarMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros)
     return numMembros;
 }
 
-tipoUser lerDadosMembro(tipoUser vetorMembros[], int numMembros, int *conf)
+tipoUser lerDadosMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros, int *conf)
 {
     tipoData data;
     int posicao, validacao;
@@ -224,7 +231,11 @@ tipoUser lerDadosMembro(tipoUser vetorMembros[], int numMembros, int *conf)
     return membro;
 }
 
+<<<<<<< Updated upstream:projeto/main.c
 int procurarMembro(tipoUser vetorMembros[], int numMembros, long numUtenteS)
+=======
+int procurarMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros, long numUtenteS)
+>>>>>>> Stashed changes:projeto/projeto/main.c
 {
     int i, posicao;
 
@@ -292,6 +303,83 @@ void mostrarMembros(tipoUser vetorMembros[], int numMembros)
     }
 }
 
+<<<<<<< Updated upstream:projeto/main.c
+=======
+void atRegVacMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros)
+{
+    int ind = 0;
+    long nUtente;
+    int opVac,validacao;
+    tipoData data;
+    if(numMembros != 0)
+    {
+        nUtente = lerLong("Introduza o número do membro que pretende registar/atualizar: ",100000000,999999999);
+
+            for(ind;ind < numMembros;ind++)
+            {
+                if(vetorMembros[ind].numeroUtenteS == nUtente)
+                {
+                    funcaoEscolha_4_opcao("Estado de vacinacao", vetorMembros[ind].estadoVacinacao, ESTADO_VACINACAO_1, ESTADO_VACINACAO_2, ESTADO_VACINACAO_3, ESTADO_VACINACAO_4);
+                    validacao = strcmp(vetorMembros[ind].estadoVacinacao, ESTADO_VACINACAO_1);
+                    if(validacao == 0)
+                    {
+                        vetorMembros[ind].dataUltimaVacina.dia = -1; //valor referente á ausencia de uma data
+                    }else
+                    {
+                        do
+                        {
+                            data = lerData("Data da ultima vacina");
+                            validacao = compararData(vetorMembros[ind].dataNascimento, data);
+                            if(validacao != -1)
+                            {
+                                printf("Data invalida\n");
+                            }
+                        }while(validacao != -1);
+
+                        vetorMembros[ind].dataUltimaVacina = data;
+                    }
+                }
+                else
+                {
+                    printf("Não existe o membro selecionado");
+                }
+            }
+    }
+    else
+    {
+        printf("\t\nNão existem membros\n\n");
+    }
+}
+
+void atRegConfMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros)
+{
+    int ind = 0;
+    long nUtente;
+    int opVac,validacao;
+    tipoData data;
+    if(numMembros != 0)
+    {
+        nUtente = lerLong("Introduza o número do membro que pretende registar/atualizar: ",100000000,999999999);
+
+            for(ind;ind < numMembros;ind++)
+            {
+                if(vetorMembros[ind].numeroUtenteS == nUtente)
+                {
+                    funcaoEscolha_3_opcao("Estado de confinamento", vetorMembros[ind].estadoConfinamento, ESTADO_CONFINAMENTO_1, ESTADO_CONFINAMENTO_2, ESTADO_CONFINAMENTO_3);
+                }
+                else
+                {
+                    printf("Não existe o membro selecionado");
+                }
+            }
+    }
+    else
+    {
+        printf("\t\nNão existem membros\n\n");
+    }
+}
+
+>>>>>>> Stashed changes:projeto/projeto/main.c
 tipoData lerData(char mensagem[])
 {
     tipoData data;
