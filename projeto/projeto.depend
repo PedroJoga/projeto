@@ -1,14 +1,15 @@
 # depslib dependency file v1.0
-1641315841 source:c:\users\pedro shan\desktop\projeto\main.c
+1641759581 source:c:\users\pedro shan\desktop\projeto\main.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
 	<string.h>
+	<time.h>
 
-1641808332 source:c:\users\utilizador\desktop\crista to sort\code\projeto\projeto\projeto\main.c
+1641826370 source:f:\ipl\programação\projeto\main.c
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
 	<string.h>
-	<locale.h>
+	<time.h>
 
