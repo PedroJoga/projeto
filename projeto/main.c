@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h> ///////////////////////// nota corrigir tamanho das strings talvez com uma funcao
+#include <ctype.h>
 #include <string.h>
-#include <time.h>
+#include <locale.h>
 
 //constantes do struct "tipoUser"
 #define N_UTENTE_S_MIN 100000000
 #define N_UTENTE_S_MAX 999999999
 #define TIPO_MEMBRO_STRING 10 // nota, trocar istas coisas por alocação dinamica de memoria, acho eu
-#define ESTADO_CONFINAMENTO_STRING 23
-#define ESTADO_VACINACAO_STRING 11
+#define ESTADO_CONFINAMENTO_STRING 22
+#define ESTADO_VACINACAO_STRING 10
 
 #define TIPO_MEMBRO_1 "estudante"
 #define TIPO_MEMBRO_2 "docente"
@@ -23,25 +23,19 @@
 #define ESTADO_VACINACAO_4 "dose3"
 
 //constantes do struct "tipoTeste"
-#define ID_MIN 1
-#define ID_MAX 99999
-#define TIPO_TESTE_STRING 10
-#define TIPO_RESULTADO_STRING 13
-#define TIPO_ESTADO_STRING 10
+#define TIPO_TESTE_STRING 9
+#define TIPO_RESULTADO_STRING 12
 
 #define TIPO_TESTE_1 "PCR"
 #define TIPO_TESTE_2 "antigenio"
 #define RESUTADO_1 "positivo"
 #define RESUTADO_2 "negativo"
 #define RESUTADO_3 "inconclusivo"
-#define ESTADO_1 "agendado"
-#define ESTADO_2 "realizado"
 
 //constantes gerais
 #define MAX_MEMBROS 200
 #define MAX_STRING 100
 #define MAX_TESTES 9999
-#define MAX_TESTES_PCR 15
 
 
 typedef struct
@@ -74,26 +68,25 @@ typedef struct
     char resultado[TIPO_RESULTADO_STRING];
     tipoHora horaColheita;
     int duracao;
-    char estado[TIPO_ESTADO_STRING];
 }tipoTeste;
 
 char menu(int, int, int, int);
 
 //funcoes
-void contarTestes(tipoTeste *, int, int *, int *);
-int contarVacinados(tipoUser *, int);
 int adicionarMembro(tipoUser *, int);
 tipoUser lerDadosMembro(tipoUser *, int, int *);
 int procurarMembro(tipoUser *, int, long);
-void mostrarMembros(tipoUser *, int, tipoTeste *, int);
-int agendarTeste(tipoTeste *, int , tipoUser *, int);
-tipoTeste lerDadosTeste(tipoTeste *, int, long);
-int gerarID(tipoTeste *, int);
+void mostrarMembros(tipoUser *, int);
+void mostrarMembros(tipoUser *, int);
+<<<<<<< Updated upstream:projeto/main.c
+=======
+void atRegVacMembro(tipoUser vetorMembros[], int numMembros);
+void atRegConfMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros);
+>>>>>>> Stashed changes:projeto/projeto/main.c
 
 //funcoes gerais
 tipoData lerData(char *);
 int compararData(tipoData, tipoData); //funcao que compara duas datas, devolte 1, se 1ºdata > 2ºdata, devolve 0 se 1ºdata == 2ºdata ou devolve -1, se 1ºdata < 2ºdata
-int procurarData(tipoData, tipoData *, int); //funcao que devolve a quantidade de datas iguais
 int lerInteiro(char *, int, int);
 int lerLong(char *, long, long);
 float lerFloat(char *, float, float);
@@ -101,11 +94,11 @@ void lerString(char *, char *, int);
 void funcaoEscolha_2_opcao(char *, char *, char *, char *);
 void funcaoEscolha_3_opcao(char *, char *, char *, char *, char *);
 void funcaoEscolha_4_opcao(char *, char *, char *, char *, char *, char *);
-int gerarNumero(int, int);
 void limpaBufferStdin(void);
 
 int main()
 {
+    setlocale(LC_ALL,"Portuguese");
     tipoUser vetorMembros[MAX_MEMBROS];
     tipoTeste vetorTestes[MAX_TESTES];
     int numMembros, numTestes, numTestesAgendados, numTestesRealizados, numVacinados;
@@ -115,14 +108,10 @@ int main()
     numTestes = 0;
     numTestesAgendados = 0;
     numTestesRealizados = 0;
-
-    srand(time(NULL)); //gerar semente aleatoria para a funcao gerarNumero();
+    numVacinados = 0;
 
     do
     {
-        contarTestes(vetorTestes, numTestes, &numTestesAgendados, &numTestesRealizados);
-        numVacinados = contarVacinados(vetorMembros, numMembros);
-
         opcao = menu(numMembros, numTestesAgendados, numTestesRealizados, numVacinados);
 
         switch(opcao)
@@ -131,16 +120,16 @@ int main()
                 numMembros = adicionarMembro(vetorMembros, numMembros);
             break;
             case 'B':
-                mostrarMembros(vetorMembros, numMembros, vetorTestes, numTestes);
+                mostrarMembros(vetorMembros, numMembros);
             break;
             case 'C':
-
+                atRegVacMembro(vetorMembros, numMembros);
             break;
             case 'D':
-
+                atRegConfMembro(vetorMembros, numMembros);
             break;
             case 'E':
-                numTestes = agendarTeste(vetorTestes, numTestes, vetorMembros, numMembros);
+
             break;
         }
 
@@ -162,59 +151,14 @@ char menu(int nMembros, int nTestesAgendados, int nTestesRealizados, int nVacina
         printf("\tB - Listar membros\n");
         printf("\tC - Registar/atualizar vacinacao\n");
         printf("\tD - Registar/atualizar confinamento\n");
-        printf("\tE - Agendar teste\n");
         printf("\tF - Fim\n");
         printf("\tOpcao --> ");
         scanf("%c", &opcao);
         opcao = toupper(opcao);
         limpaBufferStdin();
-    }while (opcao != 'A' && opcao != 'B' && opcao != 'C' && opcao != 'D' && opcao != 'E' && opcao != 'F');
+    }while (opcao != 'A' && opcao != 'B' && opcao != 'C' && opcao != 'D' && opcao != 'F');
 
     return opcao;
-}
-
-void contarTestes(tipoTeste vetorTestes[], int numTestes, int *numAgendados, int *numRealizados)
-{
-    int i, validacao;
-
-    if(numTestes > 0)
-    {
-        for(i = 0; i < numTestes; i++)
-        {
-            if(strcmp(vetorTestes[i].estado, ESTADO_1) == 0)
-            {
-                *numAgendados++;
-            }
-            printf("%s",vetorTestes[i].estado);
-            printf("primeiro if %d,%d",*numAgendados,validacao);
-            if(strcmp(vetorTestes[i].estado, ESTADO_2) == 0)
-            {
-                *numRealizados++;
-            }
-            printf("segundo if %d,%d",*numAgendados,validacao);
-        }
-    }
-}
-
-int contarVacinados(tipoUser vetorMembros[], int numMembros)
-{
-    int numero, i, validacao;
-
-    numero = 0;
-
-    if(numMembros > 0)
-    {
-        for(i = 0; i < numMembros; i++)
-        {
-            validacao = strcmp(vetorMembros[i].estadoVacinacao, ESTADO_VACINACAO_1);
-            if(validacao != 0)
-            {
-                numero++;
-            }
-        }
-    }
-
-    return numero;
 }
 
 int adicionarMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros)
@@ -239,7 +183,7 @@ int adicionarMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros)
     return numMembros;
 }
 
-tipoUser lerDadosMembro(tipoUser vetorMembros[], int numMembros, int *conf)
+tipoUser lerDadosMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros, int *conf)
 {
     tipoData data;
     int posicao, validacao;
@@ -281,13 +225,17 @@ tipoUser lerDadosMembro(tipoUser vetorMembros[], int numMembros, int *conf)
     }else
     {
         printf("O n de utente inserido ja existe.\n");
-        *conf = 0;
+       *conf = 0;
     }
 
     return membro;
 }
 
+<<<<<<< Updated upstream:projeto/main.c
 int procurarMembro(tipoUser vetorMembros[], int numMembros, long numUtenteS)
+=======
+int procurarMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros, long numUtenteS)
+>>>>>>> Stashed changes:projeto/projeto/main.c
 {
     int i, posicao;
 
@@ -305,9 +253,9 @@ int procurarMembro(tipoUser vetorMembros[], int numMembros, long numUtenteS)
     return posicao;
 }
 
-void mostrarMembros(tipoUser vetorMembros[], int numMembros, tipoTeste vetorTestes[], int numTestes)
+void mostrarMembros(tipoUser vetorMembros[], int numMembros)
 {
-    int membro, i, validacao, totalTestes, testePCR, testeAntigenio, testeAgendado, testeRealizado;
+    int membro;
 
     if(numMembros == 0)
     {
@@ -318,7 +266,7 @@ void mostrarMembros(tipoUser vetorMembros[], int numMembros, tipoTeste vetorTest
 
         for(membro = 0; membro < numMembros; membro++)
         {
-            printf("%ld %s\t%s\t%d-%d-%d\t%s\t%s", vetorMembros[membro].numeroUtenteS
+            printf("%ld %s\t%s\t%d-%d-%d\t%s\t%s\t", vetorMembros[membro].numeroUtenteS
                                                    , vetorMembros[membro].nome
                                                    , vetorMembros[membro].tipoMembro
                                                    , vetorMembros[membro].dataNascimento.dia
@@ -335,53 +283,12 @@ void mostrarMembros(tipoUser vetorMembros[], int numMembros, tipoTeste vetorTest
                                 , vetorMembros[membro].dataUltimaVacina.mes
                                 , vetorMembros[membro].dataUltimaVacina.ano);
             }
-
-            totalTestes = 0;
-            testePCR = 0;
-            testeAntigenio = 0;
-            testeAgendado = 0;
-            testeRealizado = 0;
-
-            printf("\n #   Tipo de Teste Data de Realiz. Resultado Hora  Duracao Estado\n");
-            if(numTestes != 0)
+            /*printf("\nTestes realizados: %d Teste PCR: %d Teste antigenio: %d\n");
+            for()
             {
-                for(i = 0; i < numTestes; i++)
-                {
-                    if(vetorTestes[i].numeroUtenteS == vetorMembros[membro].numeroUtenteS)
-                    {
-                        validacao = strcmp(vetorTestes[i].estado, ESTADO_2);
-                        if(validacao == 0)
-                        {
-                            testeRealizado++;
-                        }else
-                        {
-                            testeAgendado++;
-                        }
 
-                        validacao = strcmp(vetorTestes[i].tipoTeste, TIPO_TESTE_1);
-                        if(validacao == 0)
-                        {
-                            testePCR++;
-                        }else
-                        {
-                            testeAntigenio++;
-                        }
-                        printf("%4.d %s %d-%d-%d %s %d:%d %d %s\n", vetorTestes[i].testeID
-                                                                  , vetorTestes[i].tipoTeste
-                                                                  , vetorTestes[i].dataRealizacao.dia
-                                                                  , vetorTestes[i].dataRealizacao.mes
-                                                                  , vetorTestes[i].dataRealizacao.ano
-                                                                  , vetorTestes[i].resultado
-                                                                  , vetorTestes[i].horaColheita.hora
-                                                                  , vetorTestes[i].horaColheita.minuto
-                                                                  , vetorTestes[i].duracao
-                                                                  , vetorTestes[i].estado);
-                    }
-                }
-                totalTestes = testeAgendado + testeRealizado;
-                printf("\nTestes realizados: %d Teste PCR: %d Teste antigenio: %d Testes agendados: %d Total testes: %d\n", testeRealizado, testePCR, testeAntigenio, testeAgendado, totalTestes);
-                printf("=======================================================================================================\n");
             }
+            printf("=======================================================================================================\n");*/
         }
 /*
         for(aluno = 0; aluno < avaliados; aluno++)
@@ -396,83 +303,83 @@ void mostrarMembros(tipoUser vetorMembros[], int numMembros, tipoTeste vetorTest
     }
 }
 
-int agendarTeste(tipoTeste vetorTestes[], int numTestes, tipoUser vetorMembros[], int numMembros)
+<<<<<<< Updated upstream:projeto/main.c
+=======
+void atRegVacMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros)
 {
-    int posicao,numUtente;
-
-    if(numMembros == 0)
+    int ind = 0;
+    long nUtente;
+    int opVac,validacao;
+    tipoData data;
+    if(numMembros != 0)
     {
-        printf("Nao ha membros para agendar teste");
-    }else
-    {
-        printf("AGENDAR TESTE\n");
-        numUtente = lerLong("Numero de utente de saude", N_UTENTE_S_MIN, N_UTENTE_S_MAX);
-        posicao = procurarMembro(vetorMembros, numMembros, numUtente);
+        nUtente = lerLong("Introduza o número do membro que pretende registar/atualizar: ",100000000,999999999);
 
-        if(posicao == -1)
-        {
-            printf("Membro inexistente");
-        }else
-        {
-            numTestes++;
-            vetorTestes[numTestes] = lerDadosTeste(vetorTestes, numTestes, numUtente);
-        }
-    }
-    return numTestes;
-}
-
-tipoTeste lerDadosTeste(tipoTeste vetorTestes[], int numTestes, long numUtente)
-{
-    int validacao, i;
-    tipoTeste teste;
-    tipoData vetorDatas[MAX_TESTES];
-
-    printf("INSIRA OS DADOS DO TESTE\n");
-    teste.testeID = gerarID(vetorTestes, numTestes);
-    strcpy(teste.estado, ESTADO_1);
-    teste.numeroUtenteS = numUtente;
-    teste.dataRealizacao = lerData("Data de realizacao");
-
-    for(i = 0; i < numTestes; i++) //for para copiar os dados do vetor
-    {
-        vetorDatas[i] = vetorTestes[i].dataRealizacao;
-    }
-
-    validacao = procurarData(teste.dataRealizacao, vetorDatas, numTestes);
-    if(validacao < MAX_TESTES_PCR)
-    {
-        funcaoEscolha_2_opcao("Tipo de teste a efetuar", teste.tipoTeste, TIPO_TESTE_1, TIPO_TESTE_2);
-    }else
-    {
-        strcpy(teste.tipoTeste, TIPO_TESTE_2);
-        printf("Foi lhe auto atribuido um teste do tipo antigenio, devido ao limite de testes PCR diarios atingido.\n");
-    }
-
-    return teste;
-}
-
-int gerarID(tipoTeste vetorTestes[], int numTestes)
-{
-    int id, validacao, i, posicao;
-
-    do
-    {
-        validacao = 1;
-
-        id = gerarNumero(ID_MIN, ID_MAX);
-        for(i = 0; i < numTestes; i++)
-        {
-            if(vetorTestes[i].testeID == id)
+            for(ind;ind < numMembros;ind++)
             {
-                validacao = 0;
-                i = numTestes;
-            }
-        }
-    }while(validacao == 0);
+                if(vetorMembros[ind].numeroUtenteS == nUtente)
+                {
+                    funcaoEscolha_4_opcao("Estado de vacinacao", vetorMembros[ind].estadoVacinacao, ESTADO_VACINACAO_1, ESTADO_VACINACAO_2, ESTADO_VACINACAO_3, ESTADO_VACINACAO_4);
+                    validacao = strcmp(vetorMembros[ind].estadoVacinacao, ESTADO_VACINACAO_1);
+                    if(validacao == 0)
+                    {
+                        vetorMembros[ind].dataUltimaVacina.dia = -1; //valor referente á ausencia de uma data
+                    }else
+                    {
+                        do
+                        {
+                            data = lerData("Data da ultima vacina");
+                            validacao = compararData(vetorMembros[ind].dataNascimento, data);
+                            if(validacao != -1)
+                            {
+                                printf("Data invalida\n");
+                            }
+                        }while(validacao != -1);
 
-    return id;
+                        vetorMembros[ind].dataUltimaVacina = data;
+                    }
+                }
+                else
+                {
+                    printf("Não existe o membro selecionado");
+                }
+            }
+    }
+    else
+    {
+        printf("\t\nNão existem membros\n\n");
+    }
 }
 
+void atRegConfMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros)
+{
+    int ind = 0;
+    long nUtente;
+    int opVac,validacao;
+    tipoData data;
+    if(numMembros != 0)
+    {
+        nUtente = lerLong("Introduza o número do membro que pretende registar/atualizar: ",100000000,999999999);
+
+            for(ind;ind < numMembros;ind++)
+            {
+                if(vetorMembros[ind].numeroUtenteS == nUtente)
+                {
+                    funcaoEscolha_3_opcao("Estado de confinamento", vetorMembros[ind].estadoConfinamento, ESTADO_CONFINAMENTO_1, ESTADO_CONFINAMENTO_2, ESTADO_CONFINAMENTO_3);
+                }
+                else
+                {
+                    printf("Não existe o membro selecionado");
+                }
+            }
+    }
+    else
+    {
+        printf("\t\nNão existem membros\n\n");
+    }
+}
+
+>>>>>>> Stashed changes:projeto/projeto/main.c
 tipoData lerData(char mensagem[])
 {
     tipoData data;
@@ -549,24 +456,6 @@ int compararData(tipoData data1, tipoData data2)
         }
     }
     return resultado;
-}
-
-int procurarData(tipoData dataReferencia, tipoData vetorData[], int tamanhoVetor)
-{
-    int i, quantidade, validacao;
-
-    quantidade = 0;
-
-    for(i = 0; i < tamanhoVetor; i++)
-    {
-        validacao = compararData(dataReferencia, vetorData[i]);
-        if(validacao == 0)
-        {
-            quantidade++;
-        }
-    }
-
-    return quantidade;
 }
 
 int lerInteiro(char mensagem[],int min, int max)
@@ -761,15 +650,6 @@ void funcaoEscolha_4_opcao(char mensagem[], char vetor[], char opcao1[], char op
         default:
             strcpy(vetor, opcao4);
     }
-}
-
-int gerarNumero(int min, int max)
-{
-    int numero;
-
-    numero = (rand() % (max - min + 1)) + min;
-
-    return numero;
 }
 
 void limpaBufferStdin(void)
