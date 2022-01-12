@@ -3,6 +3,7 @@
 #include <ctype.h> ///////////////////////// nota corrigir tamanho das strings talvez com uma funcao
 #include <string.h>
 #include <time.h>
+#include <locale.h>
 
 //constantes do struct "tipoUser"
 #define N_UTENTE_S_MIN 100000000
@@ -89,6 +90,8 @@ void mostrarMembros(tipoUser *, int, tipoTeste *, int);
 int agendarTeste(tipoTeste *, int , tipoUser *, int);
 tipoTeste lerDadosTeste(tipoTeste *, int, long);
 int gerarID(tipoTeste *, int);
+void atRegVacMembro(tipoUser vetorMembros[], int numMembros);
+void atRegConfMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros);
 
 //funcoes gerais
 tipoData lerData(char *);
@@ -106,6 +109,7 @@ void limpaBufferStdin(void);
 
 int main()
 {
+	setlocale(LC_ALL,"Portuguese");
     tipoUser vetorMembros[MAX_MEMBROS];
     tipoTeste vetorTestes[MAX_TESTES];
     int numMembros, numTestes, numTestesAgendados, numTestesRealizados, numVacinados;
@@ -393,6 +397,80 @@ void mostrarMembros(tipoUser vetorMembros[], int numMembros, tipoTeste vetorTest
             printf("%d \t %s \t\t %.2f \t", vetorEstudantes[aluno].numero, vetorEstudantes[aluno].nome, vetorEstudantes[aluno].nota);
             printf("%d-%d-%d\n", vetorEstudantes[aluno].dataAvaliacao.dia, vetorEstudantes[aluno].dataAvaliacao.mes, vetorEstudantes[aluno].dataAvaliacao.ano);
         }*/
+    }
+}
+
+void atRegVacMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros)
+{
+    int ind = 0;
+    long nUtente;
+    int opVac,validacao;
+    tipoData data;
+    if(numMembros != 0)
+    {
+        nUtente = lerLong("Introduza o número do membro que pretende registar/atualizar: ",100000000,999999999);
+
+            for(ind;ind < numMembros;ind++)
+            {
+                if(vetorMembros[ind].numeroUtenteS == nUtente)
+                {
+                    funcaoEscolha_4_opcao("Estado de vacinacao", vetorMembros[ind].estadoVacinacao, ESTADO_VACINACAO_1, ESTADO_VACINACAO_2, ESTADO_VACINACAO_3, ESTADO_VACINACAO_4);
+                    validacao = strcmp(vetorMembros[ind].estadoVacinacao, ESTADO_VACINACAO_1);
+                    if(validacao == 0)
+                    {
+                        vetorMembros[ind].dataUltimaVacina.dia = -1; //valor referente á ausencia de uma data
+                    }else
+                    {
+                        do
+                        {
+                            data = lerData("Data da ultima vacina");
+                            validacao = compararData(vetorMembros[ind].dataNascimento, data);
+                            if(validacao != -1)
+                            {
+                                printf("Data invalida\n");
+                            }
+                        }while(validacao != -1);
+
+                        vetorMembros[ind].dataUltimaVacina = data;
+                    }
+                }
+                else
+                {
+                    printf("Não existe o membro selecionado");
+                }
+            }
+    }
+    else
+    {
+        printf("\t\nNão existem membros\n\n");
+    }
+}
+
+void atRegConfMembro(tipoUser vetorMembros[MAX_MEMBROS], int numMembros)
+{
+    int ind = 0;
+    long nUtente;
+    int opVac,validacao;
+    tipoData data;
+    if(numMembros != 0)
+    {
+        nUtente = lerLong("Introduza o número do membro que pretende registar/atualizar: ",100000000,999999999);
+
+            for(ind;ind < numMembros;ind++)
+            {
+                if(vetorMembros[ind].numeroUtenteS == nUtente)
+                {
+                    funcaoEscolha_3_opcao("Estado de confinamento", vetorMembros[ind].estadoConfinamento, ESTADO_CONFINAMENTO_1, ESTADO_CONFINAMENTO_2, ESTADO_CONFINAMENTO_3);
+                }
+                else
+                {
+                    printf("Não existe o membro selecionado");
+                }
+            }
+    }
+    else
+    {
+        printf("\t\nNão existem membros\n\n");
     }
 }
 
