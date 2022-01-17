@@ -13,3 +13,11 @@
 	<string.h>
 	<time.h>
 
+1642378038 source:c:\users\utilizador\desktop\crista to sort\code\projeto\projeto\main.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<string.h>
+	<time.h>
+	<locale.h>
+
