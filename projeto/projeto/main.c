@@ -78,6 +78,14 @@ typedef struct
     char estado[TIPO_ESTADO_STRING];
 }tipoTeste;
 
+typedef struct
+{
+    long numeroUtenteS;
+    char estadoConfinamento[ESTADO_CONFINAMENTO_STRING];
+    tipoData dataConfinamento;
+    int duracaoConfinamento;
+}tipoConfinamento;
+
 char menu(int, int, int, int);
 
 //funcoes
@@ -110,8 +118,11 @@ void limpaBufferStdin(void);
 int main()
 {
     setlocale(LC_ALL,"Portuguese");
+    tipoConfinamento *pConf;
+	pConf = malloc(1 * sizeof(tipoConfinamento));
     tipoUser vetorMembros[MAX_MEMBROS];
     tipoTeste vetorTestes[MAX_TESTES];
+    FILE *ficheiro;
     int numMembros, numTestes, numTestesAgendados, numTestesRealizados, numVacinados;
     char opcao;
 
@@ -122,8 +133,40 @@ int main()
 
     srand(time(NULL)); //gerar semente aleatoria para a funcao gerarNumero();
 
+    //Atualizar no inicio do programa as structs com dados
+    ficheiro = fopen("membros.dat","rb");
+    if(ficheiro == NULL)
+    {
+        printf("Erro ao atualizar os dados no programa");
+    }
+    else
+    {
+        fread(&numMembros,sizeof(int),1,ficheiro);
+        fread(vetorMembros,sizeof(tipoUser),MAX_MEMBROS,ficheiro);
+    }
+    fclose(ficheiro);
+    //------------
+
+
     do
     {
+
+        //Atualizar dados no ficheiro
+        ficheiro = fopen("membros.dat","wb");
+        if(ficheiro == NULL)
+        {
+            printf("Erro ao guardar os dados no ficheiro");
+        }
+        else
+        {
+            fwrite(&numMembros,sizeof(int),1,ficheiro);
+            fwrite(vetorMembros,sizeof(tipoUser),MAX_MEMBROS,ficheiro);
+            //fwrite()
+        }
+        fclose(ficheiro);
+        //----------------
+
+
         contarTestes(vetorTestes, numTestes, &numTestesAgendados, &numTestesRealizados);
         numVacinados = contarVacinados(vetorMembros, numMembros);
 
